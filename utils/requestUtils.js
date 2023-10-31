@@ -37,7 +37,7 @@ const acceptsJson = request => {
  */
 const isJson = request => {
   // TODO: 8.4 Check whether request "Content-Type" is JSON or not
-  if ('application/json' == request.get('Content-Type')) {
+  if ('application/json' == request.headers['content-type']) {
     return true;
   }
   else {
