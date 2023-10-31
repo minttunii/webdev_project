@@ -115,7 +115,25 @@ const handleRequest = async(request, response) => {
     // - validateUser(user) from /utils/users.js 
     // - emailInUse(user.email) from /utils/users.js
     // - badRequest(response, message) from /utils/responseUtils.js
-    throw new Error('Not Implemented');
+    
+    const json = await parseBodyJson(request);
+    const errors = validateUser(json);
+
+    for(let i=0; i < errors.length; i++){
+      if(errors[i] === 'Missing name'){
+        return responseUtils.badRequest(response, 'Bad Request');
+      }
+      else if(errors[i] === 'Missing email'){
+        return responseUtils.badRequest(response, 'Bad Request');
+      }
+      else if(errors[i] === 'Missing password'){
+        return responseUtils.badRequest(response, 'Bad Request');
+      }
+    }
+
+    if(emailInUse(json.email)){
+      return responseUtils.badRequest(response, 'Bad Request');
+    }
   }
 };
 
