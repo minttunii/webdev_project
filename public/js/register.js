@@ -14,10 +14,20 @@ form.addEventListener("submit", function(event){
     event.preventDefault();
 
     const formData = new FormData(form);
-    console.log(formData);
 
-    if(formData.get('password') !== formData.get('passwordConfirmation')){
-        console.log('Passwords dont match!');
+    if(formData.get('password') !== formData.get('passwordConfirmation')) {
+        createNotification('Passwords don\'t match!', 'notifications-container', false);
+    }
+    else {
+        var newUser = {'name':formData.get('name'), 'email':formData.get('email'), 
+            'password':formData.get('password')};
+        console.log(typeof newUser);
+
+
+        postOrPutJSON('http://localhost:3000/', 'PUT', newUser);
+        createNotification('Registration succeeded', 'notifications-container', true);
+        form.reset();
     }
 })
+
 
