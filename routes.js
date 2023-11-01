@@ -1,7 +1,7 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { emailInUse, getAllUsers, saveNewUser, validateUser } = require('./utils/users');
+const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById } = require('./utils/users');
 
 /**
  * Known API routes and their allowed methods
@@ -134,6 +134,12 @@ const handleRequest = async(request, response) => {
     if(emailInUse(json.email)){
       return responseUtils.badRequest(response, 'Bad Request');
     }
+    // Register new user
+    let new_user = saveNewUser(json);
+    // Change user role to customer
+    const user = updateUserRole(new_user._id, 'customer');
+    new_user = user;
+    responseUtils.sendJson(response, new_user, 201);
   }
 };
 
