@@ -1,8 +1,9 @@
 const responseUtils = require('./utils/responseUtils');
-const { acceptsJson, isJson, parseBodyJson } = require('./utils/requestUtils');
+const { acceptsJson, isJson, parseBodyJson, getCredentials } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
+const { use } = require('chai');
 
 /**
  * Known API routes and their allowed methods
@@ -78,7 +79,52 @@ const handleRequest = async(request, response) => {
     // - getUserById(userId) from /utils/users.js
     // - notFound(response) from  /utils/responseUtils.js 
     // - sendJson(response,  payload)  from  /utils/responseUtils.js can be used to send the requested data in JSON format
-    throw new Error('Not Implemented');
+    
+    const id = filePath.split('/').slice(-1)[0];
+    console.log("Id", id);
+    let user = getUserById(id);
+    console.log("user", user);
+
+    // If user doesn't exist
+    if(user === undefined){
+      return responseUtils.notFound(response);
+    }
+
+    const currentUser = await getCurrentUser(request);
+    console.log("Current user", currentUser);
+
+    if(currentUser === null || currentUser === undefined){
+      return responseUtils.basicAuthChallenge(response);
+    }
+    if(currentUser.role === 'customer'){
+      return responseUtils.forbidden(response);
+    }
+    if(currentUser.role == 'admin'){
+      // View user
+      if(method === 'GET'){
+        return responseUtils.sendJson(response, user);
+      }
+      // Update user
+      else if(method === 'PUT'){
+        const body = await parseBodyJson(request);
+        console.log("body", body);
+
+        // Role is missing
+        if(!body.hasOwnProperty('role')){
+          return responseUtils.badRequest(response);
+        }
+        // Update role
+        else if(body.role === 'customer' || body.role === 'admin' ){
+          const new_user = updateUserRole(id, body.role);
+          user = new_user;
+          return responseUtils.sendJson(response, user);
+        }
+        // Role is not valid
+        else{
+          return responseUtils.badRequest(response);
+        }
+      }
+    }
   }
 
   // Default to 404 Not Found if unknown url
