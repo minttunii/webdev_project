@@ -15,7 +15,7 @@ const getCurrentUser = async request => {
 
   const userArr = getCredentials(request);
 
-  if (userArr == null) {
+  if (userArr === null) {
     return null;
   }
   else {

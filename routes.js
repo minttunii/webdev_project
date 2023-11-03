@@ -107,13 +107,13 @@ const handleRequest = async(request, response) => {
         const body = await parseBodyJson(request);
 
         // Role is missing
-        if(!body.hasOwnProperty('role')){
+        if(!Object.prototype.hasOwnProperty.call(body, 'role')){
           return responseUtils.badRequest(response);
         }
         // Update role
         else if(body.role === 'customer' || body.role === 'admin' ){
-          const new_user = updateUserRole(id, body.role);
-          user = new_user;
+          const newUser = updateUserRole(id, body.role);
+          user = newUser;
           return responseUtils.sendJson(response, user);
         }
         // Role is not valid
@@ -193,11 +193,11 @@ const handleRequest = async(request, response) => {
       return responseUtils.badRequest(response, 'Bad Request');
     }
     // Register new user
-    let new_user = saveNewUser(json);
+    let newUser = saveNewUser(json);
     // Change user role to customer
-    const user = updateUserRole(new_user._id, 'customer');
-    new_user = user;
-    responseUtils.sendJson(response, new_user, 201);
+    const user = updateUserRole(newUser._id, 'customer');
+    newUser = user;
+    responseUtils.sendJson(response, newUser, 201);
   }
 };
 
