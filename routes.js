@@ -103,10 +103,10 @@ const handleRequest = async(request, response) => {
     const currentUser = await getCurrentUser(request);
     
     if(currentUser === null || currentUser === undefined){
-      responseUtils.basicAuthChallenge(response);
+      return responseUtils.basicAuthChallenge(response);
     }
     else if(currentUser.role === 'customer'){
-        return responseUtils.forbidden(response);
+      return responseUtils.forbidden(response);
     }
     return responseUtils.sendJson(response, getAllUsers());
   }
