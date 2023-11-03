@@ -21,10 +21,8 @@ form.addEventListener("submit", function(event){
     else {
         var newUser = {'name':formData.get('name'), 'email':formData.get('email'), 
             'password':formData.get('password')};
-        console.log(typeof newUser);
-
-
-        postOrPutJSON('http://localhost:3000/', 'PUT', newUser);
+            
+        postOrPutJSON('/api/register', 'POST', newUser);
         createNotification('Registration succeeded', 'notifications-container', true);
         form.reset();
     }
