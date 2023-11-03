@@ -11,7 +11,20 @@ const getCredentials = request => {
   //       You need to first decode the header back to its original form ("email:password").
   //  See: https://attacomsian.com/blog/nodejs-base64-encode-decode
   //       https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
-  throw new Error('Not Implemented');
+  const authHeader = request.headers['authorization'];
+
+  if (authHeader != null && authHeader.startsWith("Basic")) {
+    const encoded = authHeader.substring("Basic ".length);
+    const buff = Buffer.from(encoded, 'base64');
+    const decoded = buff.toString('utf-8');
+
+    const array = decoded.split(':');
+    return array;
+  }
+  else {
+    return null;
+  }
+  //throw new Error('Not Implemented');
 };
 
 /**
