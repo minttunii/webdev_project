@@ -13,7 +13,7 @@ const getCredentials = request => {
   //       https://stackabuse.com/encoding-and-decoding-base64-strings-in-node-js/
   const authHeader = request.headers['authorization'];
 
-  if (authHeader != null && authHeader.startsWith("Basic")) {
+  if (authHeader !== undefined && authHeader.startsWith("Basic")) {
     const encoded = authHeader.substring("Basic ".length);
     const buff = Buffer.from(encoded, 'base64');
     const decoded = buff.toString('utf-8');
@@ -50,7 +50,7 @@ const acceptsJson = request => {
  */
 const isJson = request => {
   // TODO: 8.4 Check whether request "Content-Type" is JSON or not
-  if ('application/json' == request.headers['content-type']) {
+  if ('application/json' === request.headers['content-type']) {
     return true;
   }
   else {
