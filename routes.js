@@ -13,7 +13,15 @@ const { use } = require('chai');
  */
 const allowedMethods = {
   '/api/register': ['POST'],
-  '/api/users': ['GET']
+  '/api/users': ['GET'],
+  '/api/products': ['GET']
+};
+
+/**
+ * Use this object to store products
+ */
+const productdata = {
+  products: require('./products.json').map(product => ({...product }))
 };
 
 /**
@@ -198,6 +206,19 @@ const handleRequest = async(request, response) => {
     const user = updateUserRole(newUser._id, 'customer');
     newUser = user;
     responseUtils.sendJson(response, newUser, 201);
+  }
+
+  // Get products
+  if (filePath === '/api/products' && method === 'GET'){
+    const currentUser = await getCurrentUser(request);
+    console.log(currentUser);
+    // If user is not authentificated
+    if(currentUser === null || currentUser === undefined){
+      return responseUtils.basicAuthChallenge(response);
+    }
+    if(currentUser.role === 'admin' || currentUser.role === 'customer'){
+      return responseUtils.sendJson(response, productdata.products, 200);
+    }
   }
 };
 
