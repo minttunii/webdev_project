@@ -211,7 +211,7 @@ const handleRequest = async(request, response) => {
   // Get products
   if (filePath === '/api/products' && method === 'GET'){
     const currentUser = await getCurrentUser(request);
-    console.log(currentUser);
+    //console.log(currentUser);
     // If user is not authentificated
     if(currentUser === null || currentUser === undefined){
       return responseUtils.basicAuthChallenge(response);
