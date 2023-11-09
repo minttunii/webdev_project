@@ -32,7 +32,11 @@ const userSchema = new Schema({
   // and the following validators:
   // required, trim, minlength, maxlength 
   name: {
-
+    type: String,
+    required: true,
+    trim: true,
+    minLength: SCHEMA_DEFAULTS.name.minLength,
+    maxLength: SCHEMA_DEFAULTS.name.maxLength
   },
   // for 'email'
   // set type
@@ -44,7 +48,11 @@ const userSchema = new Schema({
 
   //       
   email: {
-
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    match: SCHEMA_DEFAULTS.email.match
   },
   // for 'password'
   // set type
@@ -57,14 +65,27 @@ const userSchema = new Schema({
   // }
   // 
   password: {
-
+    type: String,
+    required: true,
+    minLength: SCHEMA_DEFAULTS.password.minLength,
+    //set: password => {
+      //if (MITA TAHAN) {
+      //  return password;
+      //}
+      //return bcrypt.hashSync(password, 10);
+    //}
   },
   // for 'role'
   // set type
   // and the following validators:
   //  required, trim, lowercase, enum,    default
   role: {
-
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+    enum: SCHEMA_DEFAULTS.role.values,
+    default: SCHEMA_DEFAULTS.role.defaultValue
   }
 });
 
