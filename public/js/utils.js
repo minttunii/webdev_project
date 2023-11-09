@@ -183,7 +183,7 @@ const decreaseProductCount = productId => {
     //    key: productId
     //    data: productCount - 1
     sessionStorage.setItem(productId, productCount - 1);
-    return newCount;
+    return productCount - 1;
   } else {
     // TODO 9.2 
     // use sessionStorage's removeItem('key') to remove 

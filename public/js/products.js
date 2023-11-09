@@ -24,14 +24,20 @@ const addToCart = (productId, productName) => {
 
   for (const product of allProducts) {
     var clone = template.content.cloneNode(true);
+    var id = product._id;
 
-    clone.querySelector('h3').id = `#name-${product._id}`;
+    clone.querySelector('h3').id = `name-${id}`;
     clone.querySelector('h3').textContent = product.name;
+
+    clone.querySelector('p[class="product-description"]').id = `description-${id}`;
     clone.querySelector('p[class="product-description"]').textContent = product.description;
+
+    clone.querySelector('p[class="product-price"]').id = `price-${id}`;
     clone.querySelector('p[class="product-price"]').textContent = product.price;
 
-    //const button = clone.querySelector('button');
-    clone.querySelector('button').addEventListener('click', function() {
+    const button = clone.querySelector('button');
+    button.id = `add-to-cart-${id}`;
+    button.addEventListener('click', function() {
       addToCart(product._id, product.name);
     });
 
