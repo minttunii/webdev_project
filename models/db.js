@@ -11,7 +11,11 @@ const mongoose = require('mongoose');
  */
 const getDbUrl = () => {
   // TODO: 9.4 Implement this
-  throw new Error('Implement this');
+  const dburl = process.env.DBURL;
+  if(dburl === undefined){
+    return 'mongodb://localhost:27017/WebShopDb';
+  }
+  return dburl;
 };
 
 function connectDB() {
