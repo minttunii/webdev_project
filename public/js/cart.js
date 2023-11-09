@@ -91,7 +91,7 @@ const placeOrder = async() => {
     clone.querySelector('h3').textContent = productInfo.name;
 
     clone.querySelector('p[class="product-price"]').id = `price-${id}`;
-    clone.querySelector('p[class="product-price"]').textContent = product.price;
+    clone.querySelector('p[class="product-price"]').textContent = productInfo.price;
 
     clone.querySelector('p[class="product-amount"]').id = `amount-${id}`;
     clone.querySelector('p[class="product-amount"]').textContent = product.amount + "x";
