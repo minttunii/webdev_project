@@ -1,7 +1,7 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson, getCredentials } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
+const { getAllUsers, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
 const { use } = require('chai');
 const User = require('./models/user');
@@ -88,12 +88,14 @@ const handleRequest = async(request, response) => {
     // - getUserById(userId) from /utils/users.js
     // - notFound(response) from  /utils/responseUtils.js 
     // - sendJson(response,  payload)  from  /utils/responseUtils.js can be used to send the requested data in JSON format
-    
+
     const id = filePath.split('/').slice(-1)[0];
-    let user = getUserById(id);
+    const idUser = await User.findById(id).exec();
+
+    //let user = getUserById(id);
 
     // If user doesn't exist
-    if(user === undefined){
+    if(idUser === undefined){
       return responseUtils.notFound(response);
     }
 
@@ -108,7 +110,7 @@ const handleRequest = async(request, response) => {
     if(currentUser.role === 'admin'){
       // View user
       if(method === 'GET'){
-        return responseUtils.sendJson(response, user);
+        return responseUtils.sendJson(response, currentUser);
       }
 
       // Update user
@@ -121,9 +123,11 @@ const handleRequest = async(request, response) => {
         }
         // Update role
         else if(body.role === 'customer' || body.role === 'admin' ){
-          const newUser = updateUserRole(id, body.role);
-          user = newUser;
-          return responseUtils.sendJson(response, user);
+          //const newUser = updateUserRole(id, body.role);
+          //user = newUser;
+          idUser.role = body.role;
+          await idUser.save();
+          return responseUtils.sendJson(response, idUser);
         }
         // Role is not valid
         else{
@@ -133,8 +137,8 @@ const handleRequest = async(request, response) => {
 
       // Delete user
       else if(method === 'DELETE'){
-        user = deleteUserById(id);
-        return responseUtils.sendJson(response, user);
+        User.deleteOne({ _id: id });
+        return responseUtils.sendJson(response, idUser);
       }
     }
   }
@@ -175,13 +179,6 @@ const handleRequest = async(request, response) => {
     if (!isJson(request)) {
       return responseUtils.badRequest(response, 'Invalid Content-Type. Expected application/json');
     }
-
-    // TODO: 8.4 Implement registration
-    // You can use parseBodyJson(request) method from utils/requestUtils.js to parse request body.
-    // Useful methods here include:
-    // - validateUser(user) from /utils/users.js 
-    // - emailInUse(user.email) from /utils/users.js
-    // - badRequest(response, message) from /utils/responseUtils.js
     
     const json = await parseBodyJson(request);
 
@@ -198,7 +195,7 @@ const handleRequest = async(request, response) => {
     // Change user role to customer
     newUser.role = 'customer';
     await newUser.save();
-    
+
     responseUtils.sendJson(response, newUser, 201);
   }
 
