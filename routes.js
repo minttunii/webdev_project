@@ -184,30 +184,21 @@ const handleRequest = async(request, response) => {
     // - badRequest(response, message) from /utils/responseUtils.js
     
     const json = await parseBodyJson(request);
-    const errors = validateUser(json);
 
-    for(let i=0; i < errors.length; i++){
-      if(errors[i] === 'Missing name'){
-        return responseUtils.badRequest(response, 'Bad Request');
-      }
-      else if(errors[i] === 'Missing email'){
-        return responseUtils.badRequest(response, 'Bad Request');
-      }
-      else if(errors[i] === 'Missing password'){
-        return responseUtils.badRequest(response, 'Bad Request');
-      }
-    }
-
-    if(emailInUse(json.email)){
+    if (!json.name || !json.password || !json.email) {
       return responseUtils.badRequest(response, 'Bad Request');
     }
-    // Register new user
-    //let newUser = saveNewUser(json);
+    else if (await User.findOne({email: json.email})) {
+      return responseUtils.badRequest(response, 'Bad Request');
+    }
+
+    // Create new user
     const newUser = new User(json);
+    await newUser.save();
     // Change user role to customer
-    //const user = updateUserRole(newUser._id, 'customer');
-    //newUser = user;
     newUser.role = 'customer';
+    await newUser.save();
+    
     responseUtils.sendJson(response, newUser, 201);
   }
 
