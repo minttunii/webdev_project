@@ -1,7 +1,6 @@
 const responseUtils = require('./utils/responseUtils');
 const { acceptsJson, isJson, parseBodyJson, getCredentials } = require('./utils/requestUtils');
 const { renderPublic } = require('./utils/render');
-const { getAllUsers, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
 const { use } = require('chai');
 const User = require('./models/user');
@@ -92,10 +91,8 @@ const handleRequest = async(request, response) => {
     const id = filePath.split('/').slice(-1)[0];
     const idUser = await User.findById(id).exec();
 
-    //let user = getUserById(id);
-
     // If user doesn't exist
-    if(idUser === undefined){
+    if(idUser === undefined || idUser === null){
       return responseUtils.notFound(response);
     }
 
@@ -123,8 +120,6 @@ const handleRequest = async(request, response) => {
         }
         // Update role
         else if(body.role === 'customer' || body.role === 'admin' ){
-          //const newUser = updateUserRole(id, body.role);
-          //user = newUser;
           idUser.role = body.role;
           await idUser.save();
           return responseUtils.sendJson(response, idUser);
@@ -137,7 +132,7 @@ const handleRequest = async(request, response) => {
 
       // Delete user
       else if(method === 'DELETE'){
-        User.deleteOne({ _id: id });
+        await User.deleteOne({ _id: id });
         return responseUtils.sendJson(response, idUser);
       }
     }
@@ -170,7 +165,9 @@ const handleRequest = async(request, response) => {
     else if(currentUser.role === 'customer'){
       return responseUtils.forbidden(response);
     }
-    return responseUtils.sendJson(response, getAllUsers());
+    // find all users
+    const users = await User.find({});
+    return responseUtils.sendJson(response, users);
   }
 
   // register new user
@@ -202,7 +199,7 @@ const handleRequest = async(request, response) => {
   // Get products
   if (filePath === '/api/products' && method === 'GET'){
     const currentUser = await getCurrentUser(request);
-    //console.log(currentUser);
+
     // If user is not authentificated
     if(currentUser === null || currentUser === undefined){
       return responseUtils.basicAuthChallenge(response);

@@ -104,7 +104,7 @@ userSchema.methods.checkPassword = async function(password) {
   //      - password as given as parameter to the call to this method
   //      - the password of the user from the User model (this.password). 
   //          Here we see one of the few places where we need to use 'this' keyword.
-  return await bcrypt.compare(password, this.password);
+  return bcrypt.compare(password, this.password);
 };
 
 // Omit the version key when serialized to JSON

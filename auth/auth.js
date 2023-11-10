@@ -23,8 +23,8 @@ const getCurrentUser = async request => {
     if (emailUser === null) {
       return null;
     }
-    
-    if (!emailUser.checkPassword(userArr[1])) {
+    const isPasswordCorrect = await emailUser.checkPassword(userArr[1]);
+    if (!isPasswordCorrect) {
       return null;
     }
 
