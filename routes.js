@@ -4,6 +4,7 @@ const { renderPublic } = require('./utils/render');
 const { emailInUse, getAllUsers, saveNewUser, validateUser, updateUserRole, getUserById, deleteUserById } = require('./utils/users');
 const { getCurrentUser } = require('./auth/auth');
 const { use } = require('chai');
+const User = require('./models/user');
 
 /**
  * Known API routes and their allowed methods
@@ -201,10 +202,12 @@ const handleRequest = async(request, response) => {
       return responseUtils.badRequest(response, 'Bad Request');
     }
     // Register new user
-    let newUser = saveNewUser(json);
+    //let newUser = saveNewUser(json);
+    const newUser = new User(json);
     // Change user role to customer
-    const user = updateUserRole(newUser._id, 'customer');
-    newUser = user;
+    //const user = updateUserRole(newUser._id, 'customer');
+    //newUser = user;
+    newUser.role = 'customer';
     responseUtils.sendJson(response, newUser, 201);
   }
 
