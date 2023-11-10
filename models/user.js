@@ -68,12 +68,12 @@ const userSchema = new Schema({
     type: String,
     required: true,
     minLength: SCHEMA_DEFAULTS.password.minLength,
-    //set: password => {
-      //if (MITA TAHAN) {
-      //  return password;
-      //}
-      //return bcrypt.hashSync(password, 10);
-    //}
+    set: password => {
+      if (password.length < 10) {
+        return password;
+      }
+      return bcrypt.hashSync(password, 10);
+    }
   },
   // for 'role'
   // set type
@@ -104,6 +104,7 @@ userSchema.methods.checkPassword = async function(password) {
   //      - password as given as parameter to the call to this method
   //      - the password of the user from the User model (this.password). 
   //          Here we see one of the few places where we need to use 'this' keyword.
+  return await bcrypt.compare(password, this.password);
 };
 
 // Omit the version key when serialized to JSON
